@@ -1,3 +1,6 @@
+This is just goldendupes but i wanted to make a blacklist so server owners can give bedrock or other stuff without worry
+
+
 #### Running an anarchy server? want to make op items and have a dupe? <br> Feeling sad that all the popular dupes are patched in the more recent versions of Minecraft?  
 ## Bring back the golden age of duplicating items in Minecraft with GoldenDupes!  
 
