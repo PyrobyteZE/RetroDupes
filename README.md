@@ -1,4 +1,4 @@
-#### Running an anarchy server? <br> Feeling sad that all the popular dupes are patched in the more recent versions of Minecraft?  
+#### Running an anarchy server? want to make op items and have a dupe? <br> Feeling sad that all the popular dupes are patched in the more recent versions of Minecraft?  
 ## Bring back the golden age of duplicating items in Minecraft with GoldenDupes!  
 
 spigot download page: https://www.spigotmc.org/resources/91474
