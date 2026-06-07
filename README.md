@@ -21,10 +21,6 @@ piston dupe from (1.12.2)
 
 <br>
 
-Issues:
-If you encounter any issues, create an issue. Be sure to be as specific as possible!  
-(or DM me on discord at Ivan8or#7412, but a response is not guaranteed)
-
 <br>
 
 to build from source, download the git repo and run
