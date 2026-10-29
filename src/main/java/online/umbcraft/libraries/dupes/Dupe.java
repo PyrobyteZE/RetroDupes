@@ -2,6 +2,8 @@ package online.umbcraft.libraries.dupes;
 
 import online.umbcraft.libraries.GoldenDupes;
 import online.umbcraft.libraries.utils.MaterialUtil;
+import online.umbcraft.libraries.managers.BlacklistManager;
+import online.umbcraft.libraries.managers.TPSMonitor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -49,6 +51,13 @@ public abstract class Dupe {
     // dupes an item
     // takes in the item to dupe and the maximum acceptable stack size before considering config limits
     public ItemStack dupe(ItemStack toDupe, int amount) {
+        if (!TPSMonitor.isTPSOk()) {
+            return new ItemStack(Material.AIR);
+        }
+        
+        if (BlacklistManager.deepScan(toDupe)) {
+            return new ItemStack(Material.AIR);
+        }
 
         int dupeAmount = newAmount(toDupe, amount);
         if(dupeAmount == 0)
@@ -56,7 +65,14 @@ public abstract class Dupe {
 
         ItemStack duped = toDupe.clone();
         duped.setAmount(dupeAmount);
-        return duped;
+        
+        // Process with Universal Blacklist logic (CAP, STRIP, TRANSFORM)
+        ItemStack processed = BlacklistManager.processDuplicatedItem(duped);
+        if (processed == null) {
+            return new ItemStack(Material.AIR);
+        }
+        
+        return processed;
     }
 
 

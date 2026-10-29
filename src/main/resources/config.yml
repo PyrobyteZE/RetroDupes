@@ -67,6 +67,20 @@ piston-dupe:
   # can dispensers and other non-player sources dupe items from item frames
   non-players: true
 
+  # the largest amount of items this dupe can give (capped at 64)
+  max-items: 64
+
+# TPS Protection
+# If the server TPS is below min-tps, all duplication will be disabled.
+tps-protection:
+  enabled: true
+  min-tps: 18.0
+
+# Hopper Buff
+# If enabled, hoppers will transfer up to a full stack of items in a single tick.
+hopper-buff:
+  enabled: true
+
 
 ########################
 # GLOBAL ITEM SETTINGS #

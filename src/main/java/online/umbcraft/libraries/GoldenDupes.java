@@ -1,5 +1,15 @@
 package online.umbcraft.libraries;
 
+import online.umbcraft.libraries.commands.AdminCommand;
+import online.umbcraft.libraries.commands.AdminTabCompleter;
+import online.umbcraft.libraries.commands.RulesCommand;
+import online.umbcraft.libraries.listeners.ChatListener;
+import online.umbcraft.libraries.listeners.GUIListener;
+import online.umbcraft.libraries.listeners.HopperBuffListener;
+import online.umbcraft.libraries.listeners.ImmortalListener;
+import online.umbcraft.libraries.listeners.ShulkerNestingListener;
+import online.umbcraft.libraries.managers.BlacklistManager;
+import online.umbcraft.libraries.managers.TPSMonitor;
 import online.umbcraft.libraries.utils.ConfigPath;
 import online.umbcraft.libraries.dupes.*;
 import org.bstats.bukkit.Metrics;
@@ -19,6 +29,8 @@ public final class GoldenDupes extends JavaPlugin {
 
     public void onReloadCommand() {
         reloadConfig();
+        BlacklistManager.reload();
+        TPSMonitor.init(this);
     }
 
     public void onEnable() {
@@ -28,8 +40,24 @@ public final class GoldenDupes extends JavaPlugin {
 
         if (!configFile.exists()) {
             instance.saveDefaultConfig();
-            return;
         }
+
+        // Initialize Managers
+        BlacklistManager.init(this);
+        TPSMonitor.init(this);
+
+        // Register Global Listeners
+        getServer().getPluginManager().registerEvents(new GUIListener(), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        getServer().getPluginManager().registerEvents(new ShulkerNestingListener(), this);
+        getServer().getPluginManager().registerEvents(new HopperBuffListener(), this);
+        getServer().getPluginManager().registerEvents(new ImmortalListener(), this);
+        getServer().getPluginManager().registerEvents(new online.umbcraft.libraries.listeners.FoodTransformListener(this), this);
+
+        // Register Commands
+        getCommand("dupes").setExecutor(new AdminCommand(this));
+        getCommand("dupes").setTabCompleter(new AdminTabCompleter());
+        getCommand("rules").setExecutor(new RulesCommand());
 
         //bStats metrics
         Metrics metrics = new Metrics(this, 11145);

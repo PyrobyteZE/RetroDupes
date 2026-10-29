@@ -5,6 +5,9 @@ import online.umbcraft.libraries.GoldenDupes;
 import online.umbcraft.libraries.utils.ConfigPath;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -67,6 +70,8 @@ public class NetherPortalDupe extends Dupe implements Listener {
 
         StorageMinecart cart = (StorageMinecart) e.getEntity();
         UUID cartID = cart.getUniqueId();
+        
+        // Handle Cooldowns
         if (GoldenDupes.isFolia()) {
             if(transported_folia.containsKey(cartID)) {
                 delayCartReuse(cartID);
@@ -79,11 +84,44 @@ public class NetherPortalDupe extends Dupe implements Listener {
                 return;
             }
         }
-
         delayCartReuse(cartID);
 
-        List<DupedItem> items = dupedItems.get(cart.getUniqueId());
+        // --- NEW AUTO-DUPE LOGIC ---
+        // Scan for nearby hopper to deposit duped items
+        Block cartBlock = cart.getLocation().getBlock();
+        Hopper targetHopper = null;
+        BlockFace[] faces = {BlockFace.SELF, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
+        
+        for (BlockFace face : faces) {
+            Block adj = cartBlock.getRelative(face);
+            if (adj.getState() instanceof Hopper) {
+                targetHopper = (Hopper) adj.getState();
+                break;
+            }
+        }
 
+        // Dupe everything inside the cart
+        for (ItemStack item : cart.getInventory().getContents()) {
+            if (item == null || item.getType() == Material.AIR) continue;
+
+            // dupe() method handles Blacklist, TPS, and Deep Scanning automatically
+            ItemStack dupedItem = dupe(item, item.getAmount());
+            
+            if (dupedItem != null && dupedItem.getType() != Material.AIR) {
+                if (targetHopper != null) {
+                    HashMap<Integer, ItemStack> leftover = targetHopper.getInventory().addItem(dupedItem);
+                    for (ItemStack remaining : leftover.values()) {
+                        cart.getWorld().dropItemNaturally(cart.getLocation(), remaining);
+                    }
+                } else {
+                    cart.getWorld().dropItemNaturally(cart.getLocation(), dupedItem);
+                }
+            }
+        }
+        // --- END AUTO-DUPE LOGIC ---
+
+        // Original "item removal" dupe logic (maintained for players who do it manually)
+        List<DupedItem> items = dupedItems.get(cart.getUniqueId());
         if(items == null)
             return;
 

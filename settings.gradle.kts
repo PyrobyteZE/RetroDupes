@@ -1,1 +1,1 @@
-rootProject.name = "GoldenDupes"
+rootProject.name = "RetroDupe"

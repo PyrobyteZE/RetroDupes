@@ -1,7 +1,24 @@
-name: GoldenDupes
+name: RetroDupe
 main: online.umbcraft.libraries.GoldenDupes
 version: ${version}
 api-version: 1.15
 author: Ivan8or
 description: ${description}
 folia-supported: true
+
+commands:
+  dupes:
+    description: Admin command for GoldenDupes
+    usage: /dupes <blacklist|config> [args...]
+    permission: goldendupes.admin
+  rules:
+    description: View the Chaos SMP rules
+    usage: /rules
+
+permissions:
+  goldendupes.admin:
+    description: Allows access to the GoldenDupes admin GUI
+    default: op
+  retrodupe.immortal:
+    description: Prevents players from dropping below half a heart
+    default: false
