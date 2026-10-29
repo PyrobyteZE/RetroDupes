@@ -187,6 +187,12 @@ public class AutocraftDupe extends Dupe implements Listener {
 
         final ItemStack duped = dupe(toDupe, stacksize);
 
+        // nothing to give (TPS protection, blacklist or config limits): let the normal pickup happen
+        if (duped.getType() == Material.AIR) {
+            dupeAmnt.remove(p.getUniqueId());
+            return;
+        }
+
         e.setCancelled(true);
         int currentMaxStack = p.getInventory().getMaxStackSize();
         int newMaxStack = newAmount(toDupe, stacksize);

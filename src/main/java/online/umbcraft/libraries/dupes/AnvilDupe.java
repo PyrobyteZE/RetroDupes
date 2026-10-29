@@ -73,6 +73,9 @@ public class AnvilDupe extends Dupe implements Listener {
                 return;
             }
             ItemStack duped_item = dupe(toDupe, toDupe.getAmount());
+            if (duped_item.getType() == Material.AIR) {
+                return;
+            }
 
             Item dropped = p.getWorld().dropItem(p.getLocation(), duped_item);
             dropped.setVelocity(p.getEyeLocation().getDirection());

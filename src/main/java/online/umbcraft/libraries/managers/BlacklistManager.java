@@ -298,7 +298,7 @@ public class BlacklistManager {
             if (meta.hasDisplayName()) {
                 originalName = meta.getDisplayName();
             } else {
-                originalName = org.apache.commons.lang3.StringUtils.capitalize(originalName.toLowerCase().replace("_", " "));
+                originalName = originalName.substring(0, 1) + originalName.substring(1).toLowerCase().replace("_", " ");
             }
             
             meta.setDisplayName(prefix + originalName);

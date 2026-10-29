@@ -105,7 +105,7 @@ public class ConfigCommand {
                 return true;
         }
 
-        if (path == null || newValue == null) {
+        if (path == null) {
             sender.sendMessage("§8§l[§6§lDupes§8§l] §cInvalid setting: §e" + setting);
             return true;
         }
@@ -114,6 +114,11 @@ public class ConfigCommand {
         if (value == null) {
             Object currentValue = config.get(path);
             sender.sendMessage("§8§l[§6§lDupes§8§l] §7" + path + " = §e" + currentValue);
+            return true;
+        }
+
+        if (newValue == null) {
+            sender.sendMessage("§8§l[§6§lDupes§8§l] §cInvalid value for §e" + setting + "§c: §e" + value);
             return true;
         }
 
@@ -226,7 +231,8 @@ public class ConfigCommand {
             setting.equals("max") || setting.equals("tick-delay") || setting.equals("delay") ||
             setting.equals("stack-to") || setting.equals("stack")) {
             try {
-                return Integer.parseInt(value);
+                int parsed = Integer.parseInt(value);
+                return parsed < 0 ? null : parsed;
             } catch (NumberFormatException e) {
                 return null;
             }

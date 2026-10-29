@@ -29,6 +29,7 @@ public final class GoldenDupes extends JavaPlugin {
 
     public void onReloadCommand() {
         reloadConfig();
+        Dupe.loadConfig(getConfig());
         BlacklistManager.reload();
         TPSMonitor.init(this);
     }

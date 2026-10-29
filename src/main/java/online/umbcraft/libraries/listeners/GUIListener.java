@@ -7,7 +7,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -19,8 +21,16 @@ public class GUIListener implements Listener {
         String title = e.getView().getTitle();
 
         if (title.startsWith("§4Universal Blacklist - Page ")) {
+            // Clicks in the player's own inventory must stay allowed so they can pick up an item
+            // for "Add New Material", but nothing may be moved into or collected out of the GUI.
+            if (e.getClickedInventory() != e.getView().getTopInventory()) {
+                if (e.isShiftClick() || e.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+                    e.setCancelled(true);
+                }
+                return;
+            }
             e.setCancelled(true);
-            
+
             if (e.getClickedInventory() == e.getView().getTopInventory()) {
                 int page = Integer.parseInt(title.substring("§4Universal Blacklist - Page ".length())) - 1;
                 ItemStack clickedItem = e.getCurrentItem();
@@ -51,6 +61,8 @@ public class GUIListener implements Listener {
                                 BlacklistManager.reload();
                                 p.sendMessage("§aAdded " + name + " to blacklist!");
                                 BlacklistGUI.openUniversalBlacklistEditor(p, page);
+                            } else {
+                                p.sendMessage("§c" + name + " is already in the blacklist.");
                             }
                         } else {
                             p.sendMessage("§cClick this button with an item in your cursor to add it!");
@@ -102,7 +114,7 @@ public class GUIListener implements Listener {
                 } else if (slot == 14 && clickedItem.getType() == Material.ENCHANTED_BOOK) { // Strip
                     p.closeInventory();
                     ChatListener.awaitingStripInput.put(p.getUniqueId(), matName);
-                    p.sendMessage("§aType the enchantments to strip, separated by commas (e.g. sharp,unbreaking). Type 'cancel' to abort.");
+                    p.sendMessage("§aType the enchantments to strip, separated by commas (e.g. sharpness,unbreaking). Type 'cancel' to abort.");
                 } else if (slot == 16) { // Delete
                     BlacklistManager.getConfig().set("universal_blacklist." + matName, null);
                     BlacklistManager.save();
@@ -112,6 +124,20 @@ public class GUIListener implements Listener {
                 } else if (slot == 22) { // Back
                     BlacklistGUI.openUniversalBlacklistEditor(p, 0);
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent e) {
+        String title = e.getView().getTitle();
+        if (!title.startsWith("§4Universal Blacklist - Page ") && !title.startsWith("§6Edit: ")) return;
+
+        int topSize = e.getView().getTopInventory().getSize();
+        for (int slot : e.getRawSlots()) {
+            if (slot < topSize) {
+                e.setCancelled(true);
+                return;
             }
         }
     }

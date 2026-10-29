@@ -38,13 +38,13 @@ public class NetherPortalDupe extends Dupe implements Listener {
     }
 
     public void delayCartReuse(UUID minecart) {
-        if(transported.containsKey(minecart)) {
-            if (GoldenDupes.isFolia()) {
+        if (GoldenDupes.isFolia()) {
+            if(transported_folia.containsKey(minecart)) {
                 transported_folia.get(minecart).cancel();
             }
-            else {
-                Bukkit.getServer().getScheduler().cancelTask(transported.get(minecart));
-            }
+        }
+        else if(transported.containsKey(minecart)) {
+            Bukkit.getServer().getScheduler().cancelTask(transported.get(minecart));
         }
         if (GoldenDupes.isFolia()) {
             ScheduledTask newID  = Bukkit.getGlobalRegionScheduler().runDelayed(GoldenDupes.getInstance(), t -> {
@@ -128,7 +128,11 @@ public class NetherPortalDupe extends Dupe implements Listener {
         for(DupedItem i: items) {
             ItemStack item = i.getItem();
             if(item != null) {
-                cart.getInventory().setItem(i.getSlot(), dupe(item, item.getAmount()));
+                // dupe() returns AIR when blocked (TPS, blacklist, config); don't wipe whatever is in the slot now
+                ItemStack restored = dupe(item, item.getAmount());
+                if (restored.getType() != Material.AIR) {
+                    cart.getInventory().setItem(i.getSlot(), restored);
+                }
             }
         }
         items.clear();

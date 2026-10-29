@@ -21,8 +21,8 @@ public class TPSMonitor {
             if (tps[0] < minTps) {
                 return false;
             }
-        } catch (Exception e) {
-            // Fallback if not on Paper/Folia and method missing
+        } catch (NoSuchMethodError | Exception e) {
+            // Fallback if not on Paper/Folia and method missing (Spigot throws NoSuchMethodError, an Error)
         }
         return true;
     }
